@@ -1,5 +1,0 @@
-ftp://pablopita.es
-u340982879.ppita_test 
-R/s2s*EBs$e
-
-localhost:8080/php-ftp/backend/settingftp.php?host=pablopita.es&port=21&user=u340982879.ppita_test&password=R/s2s*EBs$e
