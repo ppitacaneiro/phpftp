@@ -10,9 +10,9 @@ header("Access-Control-Allow-Methods: OPTIONS,GET,POST,PUT,DELETE");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-if (isset($_GET['action']) && !empty($_SESSION))
+if (isset($_GET['action']))
 {
-    $controlador = new Controlador($_SESSION['host'],$_SESSION['port'],$_SESSION['user'],$_SESSION['password']);
+    $controlador = new Controlador();
     switch ($_GET['action']) {
         case 'FTP_CONNECT':
             $response = $controlador->connect();
