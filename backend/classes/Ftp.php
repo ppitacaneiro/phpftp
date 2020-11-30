@@ -64,6 +64,17 @@ class Ftp {
     public function deleteDir($dir):bool {
         return ftp_rmdir($this->connection,$dir);
     }
+
+    public function find($dir,$fileToSearch):bool {
+        $files = $this->list($dir);
+        foreach ($files as $file) {
+            if ($file == $fileToSearch) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
 
 ?>

@@ -10,10 +10,10 @@ class Controlador {
         if ($this->isFtpSettingsInUserSession()) {
             $this->ftp = new Ftp($_SESSION['host'],$_SESSION['port'],$_SESSION['user'],$_SESSION['password']);
         } else if ($this->isFtpSettingsPosted()) {
-            $host = $this->sanitizeInputString($_GET['host']);
-            $port = $this->sanitizeInputString($_GET['port']);
-            $user = $this->sanitizeInputString($_GET['user']);
-            $password = $this->sanitizeInputString($_GET['password']);
+            $host = $this->sanitizeInputString($_POST['host']);
+            $port = $this->sanitizeInputString($_POST['port']);
+            $user = $this->sanitizeInputString($_POST['user']);
+            $password = $this->sanitizeInputString($_POST['password']);
             $this->saveFtpSettingsInUserSession($host, $port, $user, $password);
             $this->ftp = new Ftp($host, $port, $user, $password);
         }
@@ -29,12 +29,18 @@ class Controlador {
         return $response;
     }
 
-    public function get($serverFile,$ftpFile) {
+    public function get($ftpDir = './',$serverFile,$ftpFile) {
         if ($this->ftp->connect()) {
-            if ($this->ftp->get($serverFile,$ftpFile)) {
-                $response = $this->setResponse(HTTP_STATUS_CODE_200,STATUS_CODE_200,FTP_GET_FILE_OK);
-            } else {
-                $response = $this->setResponse(HTTP_STATUS_CODE_401,STATUS_CODE_401,FTP_GET_FILE_ERROR);   
+            if ($this->ftp->find($ftpDir,$ftpFile)) {
+                if ($this->ftp->get($serverFile,$ftpFile)) {
+                    $response = $this->setResponse(HTTP_STATUS_CODE_200,STATUS_CODE_200,FTP_GET_FILE_OK);
+                } else {
+                    $response = $this->setResponse(HTTP_STATUS_CODE_401,STATUS_CODE_401,FTP_GET_FILE_ERROR);   
+                }
+            }
+            else
+            {
+                $response = $this->setResponse(HTTP_STATUS_CODE_400,STATUS_CODE_400,FTP_FILE_NOT_FOUND);   
             }
         } else {
             $response = $this->setResponse(HTTP_STATUS_CODE_401,STATUS_CODE_401,FTP_CONECTION_ERROR);
@@ -43,7 +49,7 @@ class Controlador {
         return $response;
     }
 
-    private function setResponse($statusCode,$code,$message) {
+    public function setResponse($statusCode,$code,$message) {
         $response['status_code_header'] = $statusCode;
         $response['body'] = json_encode(
             array
@@ -72,7 +78,7 @@ class Controlador {
     }
 
     private function isFtpSettingsPosted() {
-        return isset($_GET['host']) && isset($_GET['port']) && isset($_GET['user']) && isset($_GET['password']);
+        return isset($_POST['host']) && isset($_POST['port']) && isset($_POST['user']) && isset($_POST['password']);
     }
 }
 
